@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布一级工作</title>
+</head>
+<body>
+    <h1>发布一级工作</h1>
+    <p>发布一级工作，不需要支付工分，一级工作的工分直接从系统中给出</p>
+    <input style="width:200px" type="text" placeholder="请输入标题"></br>
+    <textarea name="" id="" cols="30" rows="10" placeholder="请输入你需要的自由职业员工技能和具体劳动需求"></textarea></br>
+    <input type="checkbox"/>工期限制
+    <input type="date" placeholder="请输入截止时间"/></br>
+    <input style="width:1000px;" type="url" placeholder="请输入附件链接（比如程序需求或者要别人回答问题时，由于文字说明不清楚而附加的详细说明文件）"><br/>
+    <input style="width:200px" type="number" placeholder="请输入你打算支付的工分报酬">
+    <button onclick="publish_one()">发布</button>
+    <script>
+        function publish_one()
+        {
+            var title = document.getElementsByTagName("input")[0].value;
+            var content = document.getElementsByTagName("textarea")[0].value;
+            var enableTimeLimit = document.getElementsByTagName("input")[1].checked;
+            var deadline = document.getElementsByTagName("input")[2].value;
+            var attachment = document.getElementsByTagName("input")[4].value;
+            var pay = document.getElementsByTagName("input")[3].value;
+            var data = new FormData();        }
+            data.append("title",title);
+            data.append("content",content);
+            data.append("enableTimeLimit",enableTimeLimit);
+            data.append("deadline",deadline);
+            data.append("attachment",attachment);
+            data.append("pay",pay);
+            
+            const request = new XMLHttpRequest();
+            request.open("POST","/api/publish_one");
+            request.send(data);
+            request.onload = function()
+            {
+                if(request.status == 200)
+                {
+                    alert("发布成功");
+                    window.location.href = "/";
+                }
+                else
+                {
+                    alert("发布失败");
+                }
+            }
+    </script>
+</body>
+</html>
