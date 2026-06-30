@@ -207,6 +207,7 @@
                     `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
                     `email` VARCHAR(255) NOT NULL COMMENT '邮箱',
                     `username` VARCHAR(50) NOT NULL COMMENT '用户名',
+                    `nickname` VARCHAR(50) DEFAULT '' COMMENT '昵称',
                     `password` VARCHAR(255) NOT NULL COMMENT '密码（加密存储）',
                     `score` INT(11) NOT NULL DEFAULT 0 COMMENT '工分余额',
                     `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
