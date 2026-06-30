@@ -369,12 +369,12 @@
             
             <div class="form-group">
                 <label for="db_name">数据库名称 <span style="color: #f56c6c;">*</span></label>
-                <input type="text" id="db_name" name="db_name" value="gongfen" placeholder="请输入已创建好的数据库名" required>
+                <input type="text" id="db_name" name="db_name" value="" placeholder="请输入已创建好的数据库名" required>
             </div>
             
             <div class="form-group">
                 <label for="db_user">数据库用户名</label>
-                <input type="text" id="db_user" name="db_user" value="gf" placeholder="请输入数据库用户名" required>
+                <input type="text" id="db_user" name="db_user" value="" placeholder="请输入数据库用户名" required>
             </div>
             
             <div class="form-group">
