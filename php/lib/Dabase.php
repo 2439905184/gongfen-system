@@ -207,7 +207,7 @@
         }
     
         // 执行原生SQL语句
-        public function execQuery($query, $params = array()) {
+        public function execQuery($query, $params = array(),$returnResult = false) {
             try {
                 // 创建预处理语句
                 $stmt = $this->pdo->prepare($query);
@@ -219,6 +219,9 @@
         
                 // 执行预处理语句
                 $stmt->execute();
+                if ($returnResult) {
+                    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                }
                 
                 // 操作成功
                 return true;
