@@ -529,19 +529,6 @@ if (!$workList) {
         <?php endif; ?>
     </div>
 
-    <script>
-        // 接单功能（示例）
-        function acceptWork(workId) {
-            if (confirm('确定要接这个任务吗？')) {
-                // 这里可以换成 AJAX 提交
-                alert('接单功能开发中...');
-                // 实际使用：
-                // fetch('php/api/accept_work.php', {
-                //     method: 'POST',
-                //     body: new FormData(...)
-                // })
-            }
-        }
-    </script>
+    <script src="../js/acceptWork.js"></script>
 </body>
 </html>

@@ -253,7 +253,7 @@ $work = $work[0];
 
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <?php if ($work['status'] === 'Open'): ?>
-                        <button class="btn" onclick="acceptWork()">我要接单</button>
+                        <button class="btn" onclick="acceptWork(<?php echo $work['id']; ?>)">我要接单</button>
                     <?php else: ?>
                         <button class="btn" disabled>任务已<?php echo $work['status'] === 'WIP' ? '被接走' : '完成'; ?></button>
                     <?php endif; ?>
@@ -263,16 +263,6 @@ $work = $work[0];
             </div>
         </div>
     </div>
-
-    <script>
-        function acceptWork() {
-            if (!confirm('确定要接这个任务吗？')) return;
-            
-            // 这里后续对接接单接口
-            alert('接单功能已准备好，可对接后端');
-            
-            // 真实使用时替换成 fetch 提交
-        }
-    </script>
+   <script src="../js/acceptWork.js"></script>
 </body>
 </html>
