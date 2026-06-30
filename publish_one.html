@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布一级工作</title>
+    <style>
+ * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 背景装饰圆 */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #fff;
+        }
+
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* 卡片 */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        /* 头部 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .page-title {
+            font-size: 28px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-title .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-title .icon svg {
+            width: 18px;
+            height: 18px;
+            fill: #fff;
+        }
+
+        .page-desc {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .page-desc .highlight {
+            color: #67c23a;
+            font-weight: 500;
+        }
+
+        /* 表单 */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: #f56c6c;
+            margin-left: 4px;
+        }
+
+        .form-group label .tip {
+            color: #999;
+            font-weight: normal;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        /* 输入框 */
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="url"],
+        .form-group input[type="date"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #fafafa;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        /* 复选框行 */
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .checkbox-row label {
+            margin-bottom: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* 行内布局 */
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .form-row .form-group.small {
+            flex: 0 0 200px;
+        }
+
+        /* 工分输入框 */
+        .pay-input-wrapper {
+            position: relative;
+        }
+
+        .pay-input-wrapper::after {
+            content: '工分';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+        }
+
+        .pay-input-wrapper input {
+            padding-right: 60px !important;
+        }
+
+        /* 提示信息 */
+        .input-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #999;
+            line-height: 1.5;
+        }
+
+        .input-hint svg {
+            width: 12px;
+            height: 12px;
+            fill: #999;
+            vertical-align: -1px;
+            margin-right: 4px;
+        }
+
+        /* 提交按钮 */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 信息卡片 */
+        .info-card {
+            background: #f0f9eb;
+            border: 1px solid #e1f3d8;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-card .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-card .icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #67c23a;
+        }
+
+        .info-card .text {
+            font-size: 13px;
+            color: #67c23a;
+            line-height: 1.6;
+        }
+
+        .info-card .text strong {
+            font-weight: 600;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            .card {
+                padding: 25px 20px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .form-row .form-group.small {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 返回按钮 -->
+        <a href="index.html" class="back-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            返回首页
+        </a>
+
+        <div class="card">
+            <!-- 头部 -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <span class="icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                    </span>
+                    发布一级工作
+                </h1>
+                <p class="page-desc">
+                    发布一级工作，<span class="highlight">不需要支付工分</span>，
+                    一级工作的工分直接从系统中给出
+                </p>
+            </div>
+
+            <!-- 提示卡片 -->
+            <div class="info-card">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <div class="text">
+                    <strong>什么是一级工作？</strong><br>
+                    一级工作是系统级别的任务，用于社区建设和公共事务。
+                    发布者不需要支付工分，任务完成后工分由系统直接发放给接单者。
+                </div>
+            </div>
+
+            <!-- 表单 -->
+            <form id="publish_work">
+                <!-- 标题 -->
+                <div class="form-group">
+                    <label>任务标题 <span class="required">*</span></label>
+                    <input name="title" type="text" placeholder="请输入任务标题，简明扼要" required>
+                </div>
+
+                <!-- 任务详情 -->
+                <div class="form-group">
+                    <label>任务详情 <span class="required">*</span>
+                        <span class="tip">描述清楚需求，方便别人接单</span>
+                    </label>
+                    <textarea name="content" placeholder="请输入你需要的自由职业员工技能和具体劳动需求，越详细越好..." required></textarea>
+                </div>
+
+                <!-- 工期限制 -->
+                <div class="form-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="enableTimeLimit" name="enableTimeLimit">
+                        <label for="enableTimeLimit">设置工期限制</label>
+                    </div>
+                    <input name="deadline" type="date" placeholder="请选择截止日期" disabled>
+                    <div class="input-hint">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                        勾选后需要设置截止日期，过期任务将自动关闭
+                    </div>
+                </div>
+
+                <!-- 附件链接 -->
+                <div class="form-group">
+                    <label>附件链接
+                        <span class="tip">选填</span>
+                    </label>
+                    <input name="attachment" type="url" placeholder="请输入附件链接（如需求文档、设计稿、参考资料等）">
+                    <div class="input-hint">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                        当文字说明不清楚时，可以附上详细说明文件的链接
+                    </div>
+                </div>
+
+                <!-- 工分报酬 -->
+                <div class="form-group">
+                    <label>工分报酬 <span class="required">*</span></label>
+                    <div class="pay-input-wrapper">
+                        <input name="pay" type="number" min="1" placeholder="请输入工分报酬" required>
+                    </div>
+                    <div class="input-hint">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                        </svg>
+                        一级工作的工分由系统发放，不会扣除你的工分余额
+                    </div>
+                </div>
+
+                <!-- 提交按钮 -->
+                <button type="submit" class="btn-submit">发布任务</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.getElementById('publish_work').addEventListener('submit', function(e) 
+        {
+            e.preventDefault();  // 阻止默认的表单提交（阻止跳转）    
+            const data = new FormData(this);  // 打包表单数据
+            const request = new XMLHttpRequest();
+            request.open("POST","php/api/publish_one");
+            request.send(data);
+            request.onload = function()
+            {
+                if(request.status == 200)
+                {
+                    var json = JSON.parse(request.responseText);
+                    if (json.status == "success")
+                    {
+                        alert("发布成功");
+                        window.location.href = "index.html";
+                    }
+                    else{
+                        alert(json.message);
+                    }
+                }
+                else
+                {
+                    alert("发布失败");
+                }
+            }
+        })
+    </script>
+</body>
+</html>
