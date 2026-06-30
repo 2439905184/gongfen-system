@@ -6,8 +6,8 @@
  */
 
 session_start();
-include __DIR__ . '../../config.php';
-include __DIR__ . '../lib/Dabase.php';
+include __DIR__ . '/../../config.php';
+include __DIR__ . '/../lib/Dabase.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
