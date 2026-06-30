@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的交易</title>
+    <title>我发布的工作</title>
     <script></script>
 </head>
 <body>
@@ -51,7 +51,24 @@
         // 确认通过 发放工分
         function confirm_ok()
         {
-            $DB_API->update("jiaoyi",array("status" => "finish"),array("id" => $_GET["id"]))");
+            const request = new XMLHttpRequest();
+            request.open("POST", "/php/api/confirm_ok.php", true);
+            var data = new FormData();
+            data.append("work_id", "<?php echo $_GET["id"]?>")
+            data.append("worker_uid", "<?php echo $_SESSION["uid"]?>")
+            data.append("status", "finish");
+            request.send(data)
+            request.onload = function()
+            {
+                if (request.status == 200)
+                {
+                    alert("确认成功")
+                }
+                else
+                {
+                    alert("确认失败，原因：" + request.responseText)
+                }
+            }
             
         }
     </script>

@@ -9,7 +9,7 @@
     // 教程：https://segmentfault.com/a/1190000044297486
 
     class DB_API {
-        private $pdo;
+        public $pdo;
         private $error;
         
         // 连接数据库
