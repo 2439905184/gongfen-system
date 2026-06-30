@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工分系统 - 登录 / 注册</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 背景装饰圆 */
+        body::before,
+        body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        body::before {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+        }
+
+        body::after {
+            width: 300px;
+            height: 300px;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        .auth-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 35px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Logo 和标题 */
+        .auth-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .auth-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-logo svg {
+            width: 32px;
+            height: 32px;
+            fill: #fff;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 标签切换 */
+        .auth-tabs {
+            display: flex;
+            background: #f5f7fa;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-size: 15px;
+            color: #666;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .auth-tab.active {
+            background: #fff;
+            color: #667eea;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 表单 */
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            fill: #bbb;
+            transition: fill 0.3s;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid #e8e8e8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input:focus + .icon,
+        .input-wrapper:focus-within .icon {
+            fill: #667eea;
+        }
+
+        /* 记住我 & 忘记密码 */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input[type="checkbox"] {
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #764ba2;
+        }
+
+        /* 提交按钮 */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* 分割线 */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #eee;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        /* 第三方登录 */
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .social-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fff;
+        }
+
+        .social-btn:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .social-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* 底部提示 */
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .auth-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 协议勾选 */
+        .agreement {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .agreement input {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .agreement a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        /* 响应式 */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 30px 25px;
+            }
+
+            .auth-title {
+                font-size: 20px;
+            }
+
+            .auth-logo {
+                width: 56px;
+                height: 56px;
+            }
+        }
+
+        /* 输入错误提示 */
+        .input-error {
+            border-color: #f56c6c !important;
+        }
+
+        .error-text {
+            color: #f56c6c;
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .input-error + .error-text {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- 头部 Logo -->
+        <div class="auth-header">
+            <div class="auth-logo">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <h1 class="auth-title">工分系统</h1>
+            <p class="auth-subtitle">互助社区劳动价值交换平台</p>
+        </div>
+
+        <!-- 标签切换 -->
+        <div class="auth-tabs">
+            <div class="auth-tab active" data-tab="login">登录</div>
+            <div class="auth-tab" data-tab="register">注册</div>
+        </div>
+
+        <!-- 登录表单 -->
+        <form class="auth-form active" id="loginForm">
+            <div class="form-group">
+                <label>用户名 / 邮箱</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" placeholder="请输入用户名或邮箱" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>密码</label>
+                <div class="input-wrapper">
+                    <input type="password" name="password" placeholder="请输入密码" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="remember-me">
+                    <input type="checkbox" name="remember"> 记住我
+                </label>
+                <a href="#" class="forgot-password">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="btn-submit">登 录</button>
+
+            <div class="divider">
+                <span>其他登录方式</span>
+            </div>
+
+            <div class="social-login">
+                <div class="social-btn" title="微信登录">
+                    <svg viewBox="0 0 24 24" fill="#07C160">
+                        <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
+                    </svg>
+                </div>
+                <div class="social-btn" title="QQ登录">
+                    <svg viewBox="0 0 24 24" fill="#12B7F5">
+                        <path d="M12.003 2c-2.265 0-6.29 1.364-6.29 7.325v1.195S3.55 14.96 3.55 17.474c0 .665.17 1.025.281 1.025.114 0 .902-.484 1.748-2.072 0 0-.18 2.197 1.904 3.967 0 0-1.77.495-1.77 1.182 0 .686 4.078.43 6.29.43 2.212 0 6.29.256 6.29-.43 0-.687-1.77-1.182-1.77-1.182 2.085-1.77 1.905-3.967 1.905-3.967.846 1.588 1.634 2.072 1.746 2.072.111 0 .283-.36.283-1.025 0-2.514-2.166-6.954-2.166-6.954V9.325C18.29 3.364 14.268 2 12.003 2z"/>
+                    </svg>
+                </div>
+                <div class="social-btn" title="GitHub">
+                    <svg viewBox="0 0 24 24" fill="#333">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                </div>
+            </div>
+        </form>
+
+        <!-- 注册表单 -->
+        <form class="auth-form" id="registerForm">
+            <div class="form-group">
+                <label>用户名</label>
+                <div class="input-wrapper">
+                    <input type="text" name="username" placeholder="请输入用户名（3-20位）" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>邮箱</label>
+                <div class="input-wrapper">
+                    <input type="email" name="email" placeholder="请输入邮箱地址" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>密码</label>
+                <div class="input-wrapper">
+                    <input type="password" name="password" placeholder="请输入密码（至少6位）" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>确认密码</label>
+                <div class="input-wrapper">
+                    <input type="password" name="confirm_password" placeholder="请再次输入密码" required>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="agreement">
+                <label>
+                    <input type="checkbox" name="agreement" required>
+                    我已阅读并同意 <a href="#">《用户协议》</a> 和 <a href="#">《隐私政策》</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">注 册</button>
+        </form>
+
+        <!-- 底部 -->
+        <div class="auth-footer">
+            <span id="loginFooter">还没有账号？<a href="#" class="switch-tab" data-tab="register">立即注册</a></span>
+            <span id="registerFooter" style="display: none;">已有账号？<a href="#" class="switch-tab" data-tab="login">去登录</a></span>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换
+const tabs = document.querySelectorAll('.auth-tab');
+const forms = document.querySelectorAll('.auth-form');
+const loginFooter = document.getElementById('loginFooter');
+const registerFooter = document.getElementById('registerFooter');
+
+function switchTab(tabName) {
+    // 切换标签
+    tabs.forEach(tab => {
+        if (tab.dataset.tab === tabName) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+
+    // 切换表单
+    forms.forEach(form => {
+        if (form.id === tabName + 'Form') {
+            form.classList.add('active');
+        } else {
+            form.classList.remove('active');
+        }
+    });
+
+    // 切换底部文字
+    if (tabName === 'login') {
+        loginFooter.style.display = 'block';
+        registerFooter.style.display = 'none';
+    } else {
+        loginFooter.style.display = 'none';
+        registerFooter.style.display = 'block';
+    }
+}
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        switchTab(tab.dataset.tab);
+    });
+});
+
+// 底部链接切换
+document.querySelectorAll('.switch-tab').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchTab(link.dataset.tab);
+    });
+});
+
+// ==================== 封装 AJAX 提交函数 ====================
+function submitForm(form, url, successCallback) {
+    const btn = form.querySelector('.btn-submit');
+    const originalText = btn.textContent;
+    
+    // 禁用按钮，防止重复提交
+    btn.disabled = true;
+    btn.textContent = '提交中...';
+    
+    const request = new XMLHttpRequest();
+    const data = new FormData(form);  // ✅ 直接用 form 初始化，不用一个个 append
+    
+    request.open('POST', url);
+    
+    request.onload = function() {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        
+        if (request.status === 200) {
+            try {
+                const json = JSON.parse(request.responseText);
+                if (json.status === 'success') {
+                    if (successCallback) {
+                        successCallback(json);
+                    }
+                } else {
+                    alert(json.message || '操作失败');
+                }
+            } catch (e) {
+                alert('服务器返回数据格式错误');
+                console.error(e);
+            }
+        } else {
+            alert('请求失败，状态码：' + request.status);
+        }
+    };
+    
+    request.onerror = function() {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        alert('网络错误，请检查网络连接');
+    };
+    
+    request.send(data);
+}
+
+// ==================== 登录表单提交 ====================
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    submitForm(this, 'php/api/login.php', function(json) {
+        alert('登录成功！');
+        window.location.href = json.data?.redirect || 'index.php';
+    });
+});
+
+// ==================== 注册表单提交 ====================
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // 前端再校验一次密码是否一致
+    if (this.password.value !== this.confirm_password.value) {
+        alert('两次输入的密码不一致');
+        return;
+    }
+    
+    submitForm(this, 'php/api/register.php', function(json) {
+        alert('注册成功！');
+        window.location.href = json.data?.redirect || 'index.php';
+    });
+});
+    </script>
+</body>
+</html>
