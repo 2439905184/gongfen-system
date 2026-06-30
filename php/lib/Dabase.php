@@ -6,6 +6,7 @@
      * 时间：2023-10-12
      * 博客：https://segmentfault.com/u/tanking
      */
+    // 教程：https://segmentfault.com/a/1190000044297486
 
     class DB_API {
         private $pdo;
