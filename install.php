@@ -230,7 +230,7 @@
                 // 任务列表
                 $sql_work_list = "CREATE TABLE IF NOT EXISTS `{$db_prefix}work_list` (
                     `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '任务ID',
-                    `status` ENUM('Active','WIP','Finish') NOT NULL DEFAULT 'Active' COMMENT '状态：Active-待接单 WIP-进行中 Finish-已完成',
+                    `status` ENUM('Open','WIP','Finish') NOT NULL DEFAULT 'Open' COMMENT 'Open-待接单 WIP-进行中 Finish-已完成',
                     `title` VARCHAR(255) NOT NULL COMMENT '任务标题',
                     `content` TEXT NOT NULL COMMENT '任务详情',
                     `enable_time_limit` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否限时：0-否 1-是',
