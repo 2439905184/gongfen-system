@@ -4,7 +4,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 // 未登录跳转
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.html");
+    header("Location: ../login_register.html");
     exit;
 }
 $uid = $_SESSION['user_id'];
