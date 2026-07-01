@@ -489,7 +489,7 @@
                 .then(function(json) {
                     if (json.status === 'success') {
                         alert('发布成功！');
-                        window.location.href = 'index.html';
+                        window.location.href = 'index.php';
                     } else {
                         alert(json.message);
                         submitBtn.disabled = false;
@@ -502,13 +502,6 @@
                     submitBtn.textContent = '发布任务';
                 });
 
-                // 演示用的假提交
-                /*setTimeout(function() {
-                    alert('发布成功！');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = '发布任务';
-                    // window.location.href = 'work_list.php';
-                }, 1000);*/
             };
 
         };
