@@ -104,7 +104,7 @@
 <body>
     <nav>
         <a href="php/work_list.php">工作大厅</a>
-        <a href="publish_one.html">发布一级工作</a>
+        <a href="publish.html">发布工作</a>
         <?php if (!isset($_SESSION["user_id"])): ?>
             <a href="login_register.html">登录/注册</a>
         <?php else:?>
