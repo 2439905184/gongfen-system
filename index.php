@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>工分宝集市</title>
+    <title>工分系统</title>
 </head>
 <body>
     <nav>
@@ -13,7 +13,7 @@
         <a href="publish.html">发布工分交易工作</a>
         <a href="publish_one.html">发布一级工作</a>
         <a href="login_register.html">登录/注册</a>
-        <a href="userSpace.html">我的账号</a>
+        <a href="php/my_space.php">我的账号</a>
         <a href="php/my_work.php">我的接单</a>
     </nav>
     <p>说明：发布工分交易工作需要支付工分作为劳动价值交换的媒介</p>
