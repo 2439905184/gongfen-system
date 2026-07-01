@@ -618,7 +618,7 @@ document.getElementById('registerForm').addEventListener('submit', function(e) {
     
     submitForm(this, 'php/api/register.php', function(json) {
         alert('注册成功！');
-        window.location.href = json.data?.redirect || 'index.php';
+        //window.location.href = json.data?.redirect || 'index.php';
     });
 });
     </script>
