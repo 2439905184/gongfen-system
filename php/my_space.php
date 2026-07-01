@@ -13,6 +13,17 @@ $result = $DB->select($config["db_prefix"] . "user",["score","sign","contact"],[
 $score = $result[0]["score"];
 $sign = $result[0]["sign"];
 $contact = $result[0]["contact"];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
+    if (isset($_POST["logout"]) && $_POST["logout"] == "logout")
+    {
+        $_SESSION = [];
+        session_destroy();
+        echo json_encode(['code' => 200, 'msg' => '退出成功']);
+        exit;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">

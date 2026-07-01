@@ -5,14 +5,7 @@ include(__DIR__ . "/../../config.php");
 $DB = new DB_API($config);
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-    if (isset($_POST["logout"]) && $_POST["logout"] == "logout")
-    {
-        $_SESSION = [];
-        session_destroy();
-        echo json_encode(['code' => 200, 'msg' => '退出成功']);
-        exit;
-    }
-    elseif (isset($_POST["sign"]) && isset($_POST["contact"]))
+    if (isset($_POST["sign"]) && isset($_POST["contact"]))
     {
         $where = ["id"=>$_SESSION["user_id"]];
         $data = [
