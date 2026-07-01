@@ -1,15 +1,12 @@
 <?php
-/**
- * 发布一级任务接口
- */
-
 // 1. 开启 Session（必须放在最前面）
 session_start();
 
-// 2. 引入文件（注意文件名：Dabase.php，不是 Dabse.php）
 include __DIR__ . '/../lib/Database.php';
 include __DIR__ . '/../../config.php';
-
+$DB = new DB_API($config);
+$result = $DB->select($config['db_prefix'] . 'user', ["score"], ['id' => $_SESSION['user_id']]);
+$balance = $result[0]['score'];
 // 3. 检查是否登录
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([
@@ -27,6 +24,7 @@ $deadline       = !empty($_POST['deadline']) ? $_POST['deadline'] : null;
 $attachment     = trim($_POST['attachment'] ?? '');
 $pay            = (int)($_POST['pay'] ?? 0);
 $work_type      = $_POST["work_type"];
+
 // 5. 参数校验
 if (empty($title)) {
     echo json_encode(['status' => 'error', 'message' => '请输入任务标题']);
@@ -40,6 +38,14 @@ if ($pay <= 0) {
     echo json_encode(['status' => 'error', 'message' => '工分报酬必须大于0']);
     exit;
 }
+if ($work_type == "common")
+{
+    if ($balance < $pay) {
+        echo json_encode(['status' => 'error', 'message' => '余额不足']);
+        exit;
+    }
+}
+
 if ($enableTimeLimit && empty($deadline)) {
     echo json_encode(['status' => 'error', 'message' => '请选择截止日期']);
     exit;
