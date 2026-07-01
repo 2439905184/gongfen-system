@@ -9,9 +9,8 @@
     // 教程：https://segmentfault.com/a/1190000044297486
 
     class DB_API {
-        public $pdo;
+        private $pdo;
         private $error;
-        
         // 连接数据库
         public function __construct($config) {
             $dsn = "mysql:host={$config['db_host']};port={$config['db_port']};dbname={$config['db_name']}";
@@ -232,7 +231,19 @@
                 return false;
             }
         }
-    
+        // 事务
+        public function beginTransaction() 
+        {
+            $this->pdo->beginTransaction();
+        }
+        public function commit()
+        {
+            $this->pdo->commit();
+        }
+        public function rollBack()
+        {
+            $this->pdo->rollBack();
+        }
         // 错误信息
         public function errorMsg() {
             return $this->error;

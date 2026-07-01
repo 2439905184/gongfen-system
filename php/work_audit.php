@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1); // 开启严格类型检查
+include(__DIR__ ."/lib/Dabase.php");
+include(__DIR__ . "/../config.php");
 session_start();
 header("Content-Type:text/html;charset=utf-8");
 
@@ -14,8 +16,8 @@ function escapeHtml(mixed $str): string {
 }
 
 // 初始化变量（严格类型）
-$loginUid = (int)($_SESSION['user_id'] ?? 0);
-$workId = (int)($_GET['id'] ?? 0);
+$loginUid = $_SESSION['user_id'];
+$workId = $_GET['id'];
 
 // 基础校验（合并GET/POST通用校验）
 if ($loginUid <= 0 || $workId <= 0) {
@@ -26,21 +28,11 @@ if ($loginUid <= 0 || $workId <= 0) {
         : LOGIN_REQUIRED_MSG
     );
 }
-
-// 引入数据库（增加文件存在性检查）
-$dbFiles = [__DIR__ . '/lib/Dabase.php', __DIR__ . '/../config.php'];
-foreach ($dbFiles as $file) {
-    if (!file_exists($file)) {
-        http_response_code(500);
-        die(ERROR_MSG_DEFAULT);
-    }
-    include $file;
-}
-
 // 初始化数据库连接
 try {
     $DB_API = new DB_API($config);
-    if (empty($DB_API->pdo) || !$DB_API->pdo instanceof PDO) {
+    if (empty($DB_API) || !$DB_API) {
+        echo $DB_API->errorMsg();
         throw new PDOException('数据库连接失败');
     }
 } catch (Exception $e) {
@@ -57,16 +49,60 @@ $tables = [
     'scoreLog' => "{$dbPrefix}score_transaction"
 ];
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET')
+{
+    // GET请求处理（页面展示）
+    // 查询任务+接单者信息（优化SQL，只查必要字段）
+    $sqlWork = "SELECT w.id, w.title, w.pay, w.status, w.work_type, 
+        pu.nickname pub_name, wk.nickname worker_name, publisher_uid
+    FROM {$tables['work']} w
+    LEFT JOIN {$tables['user']} pu ON w.publisher_uid = pu.id
+    LEFT JOIN {$tables['user']} wk ON w.worker_uid = wk.id
+    WHERE w.id = :wid LIMIT 1";
+    $workRes = $DB_API->execQuery($sqlWork, [":wid"=>$workId], true);
+        $where = [
+        "id" => $workId
+    ];
+    if (empty($workRes)) {
+        http_response_code(404);
+        die("任务不存在");
+    }
+    $work = $workRes[0];
+
+    // 权限校验：仅发布人可审核，且任务为WIP状态
+    if ($work['publisher_uid'] != $loginUid) {
+        http_response_code(403);
+        die(PERMISSION_DENIED_MSG);
+    }
+    if ($work['status'] != 'WIP') {
+        die("仅进行中的任务可审核，当前任务状态：{$work['status']}");
+    }
+    // 查询聊天记录（交付答复）
+    $sqlChat = "
+    SELECT c.message, c.create_time, s.nickname send_name
+    FROM {$tables['chat']} c
+    LEFT JOIN {$tables['user']} s ON c.sender_uid = s.id
+    WHERE c.work_id = :wid
+    ORDER BY c.create_time ASC
+    ";
+    $chatList = $DB_API->execQuery($sqlChat, [":wid"=>$workId], true) ?: [];
+}
 // POST请求处理（接口逻辑）
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Content-Type:application/json;charset=utf-8");
     
     // 重新获取POST参数（严格类型）
-    $postWorkId = (int)($_POST['work_id'] ?? 0);
+    $postWorkId = (int)($_POST['work_id']);
+    $workId = (int)($_POST['work_id']);
     if ($postWorkId <= 0 || $postWorkId !== $workId) { // 防参数篡改
         echo json_encode([
             'status'=>'error',
-            'message'=>'非法请求参数'
+            'message'=>'非法请求参数',
+            'debug'=> [
+                "postWorkId"=>$postWorkId,
+                "workId"=>$workId,
+                "loginUid"=>$loginUid
+            ],
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -108,13 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // 开启数据库事务
-    $DB_API->pdo->beginTransaction();
+    $DB_API->beginTransaction();
     $errorMsg = ERROR_MSG_DEFAULT;
 
     try {
         // 1. 更新任务状态为Finish（校验执行结果）
         $updateWork = $DB_API->update($tables['work'], ["id"=>$workId], ["status"=>"Finish"]);
-        if ($updateWork === false || $DB_API->pdo->rowCount() === 0) {
+        if ($updateWork === false)
+        {
             throw new Exception("任务状态更新失败");
         }
 
@@ -137,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [":num"=>$reward, ":pid"=>$pubId],
                 true
             );
-            if ($subPub === false || $DB_API->pdo->rowCount() === 0) {
+            if ($subPub == false || $subPub == []) {
                 throw new Exception("发布者工分扣除失败");
             }
 
@@ -170,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [":num"=>$reward, ":wid"=>$workerId],
                 true
             );
-            if ($addWorker === false || $DB_API->pdo->rowCount() === 0) {
+            if ($addWorker === false || $subPub == []) {
                 throw new Exception("接单者工分发放失败");
             }
 
@@ -203,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [":num"=>$reward, ":wid"=>$workerId],
                 true
             );
-            if ($addWorker === false || $DB_API->pdo->rowCount() === 0) {
+            if ($addWorker == false || $addWorker == []) {
                 throw new Exception("系统工分发放失败");
             }
 
@@ -233,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 提交事务
-        $DB_API->pdo->commit();
+        $DB_API->commit();
         echo json_encode([
             "status"=>"success",
             "message"=>"审核完成，工分已处理完毕",
@@ -243,13 +280,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } catch (PDOException $e) {
         // 数据库异常单独捕获
-        $DB_API->pdo->rollBack();
+        $DB_API->rollBack();
         $errorMsg = "数据库操作失败：" . $e->getMessage();
         // 生产环境可记录日志，屏蔽具体错误
         error_log("审核任务异常：" . $e->getMessage() . " | 任务ID：{$workId}");
     } catch (Exception $e) {
         // 业务异常捕获
-        $DB_API->pdo->rollBack();
+        $DB_API->rollBack();
         $errorMsg = $e->getMessage();
     }
 
@@ -260,42 +297,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }
-
-// GET请求处理（页面展示）
-// 查询任务+接单者信息（优化SQL，只查必要字段）
-$sqlWork = "
-SELECT w.id, w.title, w.pay, w.status, w.work_type, 
-       pu.nickname pub_name, wk.nickname worker_name
-FROM {$tables['work']} w
-LEFT JOIN {$tables['user']} pu ON w.publisher_uid = pu.id
-LEFT JOIN {$tables['user']} wk ON w.worker_uid = wk.id
-WHERE w.id = :wid LIMIT 1
-";
-$workRes = $DB_API->execQuery($sqlWork, [":wid"=>$workId], true);
-if (empty($workRes)) {
-    http_response_code(404);
-    die("任务不存在");
-}
-$work = $workRes[0];
-
-// 权限校验：仅发布人可审核，且任务为WIP状态
-if ($work['publisher_uid'] != $loginUid) {
-    http_response_code(403);
-    die(PERMISSION_DENIED_MSG);
-}
-if ($work['status'] != 'WIP') {
-    die("仅进行中的任务可审核，当前任务状态：{$work['status']}");
-}
-
-// 查询聊天记录（交付答复）
-$sqlChat = "
-SELECT c.message, c.create_time, s.nickname send_name
-FROM {$tables['chat']} c
-LEFT JOIN {$tables['user']} s ON c.sender_uid = s.id
-WHERE c.work_id = :wid
-ORDER BY c.create_time ASC
-";
-$chatList = $DB_API->execQuery($sqlChat, [":wid"=>$workId], true) ?: [];
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
