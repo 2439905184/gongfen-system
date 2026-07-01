@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -12,9 +15,11 @@
         <a href="php/work_list.php">工作大厅</a>
         <a href="publish.html">发布工分交易工作</a>
         <a href="publish_one.html">发布一级工作</a>
-        <a href="login_register.html">登录/注册</a>
-        <a href="php/my_space.php">我的账号</a>
-        <a href="php/my_work.php">我的接单</a>
+        <?php if (!isset($_SESSION["user_id"])): ?>
+            <a href="login_register.html">登录/注册</a>
+        <?php else:?>
+            <a href="php/my_space.php">我的账号</a>
+        <?php endif;?>
     </nav>
     <p>说明：发布工分交易工作需要支付工分作为劳动价值交换的媒介</p>
     <p>发布一级工作不需要支付工分，工分直接从系统发送给接单者</p>
