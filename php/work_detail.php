@@ -277,7 +277,8 @@ $is_worker = ($login_uid > 0 && $work['worker_uid'] == $login_uid && $work['stat
 
             <div class="info">
                 <div class="info-item">
-                    发布者：<strong><?php echo htmlspecialchars($work['publisher_name'] ?: $work['publisher_username']); ?></strong>
+                    发布者：<strong>
+                        <a href="public_user_profile_show.php?user_id=<?php echo $work['publisher_uid']?>"><?php echo htmlspecialchars($work['publisher_name'] ?: $work['publisher_username']); ?></a></strong>
                 </div>
                 <div class="info-item">
                     发布时间：<strong><?php echo $work['create_time']; ?></strong>
