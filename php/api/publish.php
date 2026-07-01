@@ -1,34 +1,84 @@
 <?php
-include "/php/lib/Db.php";
+/**
+ * 发布一级任务接口
+ */
 
-$title = $_POST["title"];
-$content = $_POST["content"];
-$enableTimeLimit = $_POST["enableTimeLimit"];
-$deadline = $_POST["deadline"];
-$pay = $_POST["pay"];
+// 1. 开启 Session（必须放在最前面）
+session_start();
 
+// 2. 引入文件（注意文件名：Dabase.php，不是 Dabse.php）
+include __DIR__ . '/../lib/Database.php';
+include __DIR__ . '/../../config.php';
+
+// 3. 检查是否登录
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([
+        'status'  => 'error',
+        'message' => '请先登录'
+    ]);
+    exit;
+}
+
+// 4. 接收参数（用 isset 判断，避免没传时报错）
+$title          = trim($_POST['title'] ?? '');
+$content        = trim($_POST['content'] ?? '');
+$enableTimeLimit = isset($_POST['enableTimeLimit']) ? 1 : 0;  // 复选框：勾选=1，没勾选=0
+$deadline       = !empty($_POST['deadline']) ? $_POST['deadline'] : null;
+$attachment     = trim($_POST['attachment'] ?? '');
+$pay            = (int)($_POST['pay'] ?? 0);
+$work_type      = $_POST["work_type"];
+// 5. 参数校验
+if (empty($title)) {
+    echo json_encode(['status' => 'error', 'message' => '请输入任务标题']);
+    exit;
+}
+if (empty($content)) {
+    echo json_encode(['status' => 'error', 'message' => '请输入任务详情']);
+    exit;
+}
+if ($pay <= 0) {
+    echo json_encode(['status' => 'error', 'message' => '工分报酬必须大于0']);
+    exit;
+}
+if ($enableTimeLimit && empty($deadline)) {
+    echo json_encode(['status' => 'error', 'message' => '请选择截止日期']);
+    exit;
+}
+
+// 6. 初始化数据库
 $DB_API = new DB_API($config);
-$data = array(
-    "title" => $title,
-    "content" => $content,
-    "enableTimeLimit" => $enableTimeLimit,
-    "deadline" => $deadline,
-    "pay" => $pay
-);
-$result = $DB_API->add("work1",$data);
-$echo_array = array(
-    "status" => "",
-    "message" => ""
-);
-if (is_string($result))
-{
-    $echo_array["status"] = "success";
-    $echo_array["message"] = "发布成功";
+$table  = $config['db_prefix'] . 'work_list';  // 表前缀 + 表名
+
+// 7. 组装数据
+$data = [
+    'title'             => $title,
+    'content'           => $content,
+    'enable_time_limit' => $enableTimeLimit,  // 注意：数据库字段名是下划线命名
+    'deadline'          => $deadline,
+    'attachment'        => $attachment,
+    'pay'               => $pay,
+    'work_type'         => $work_type,
+    'publisher_uid'     => $_SESSION['user_id'],
+    'status'            => 'Open',  // 默认状态：待接单
+];
+
+// 8. 插入数据
+$result = $DB_API->add($table, $data);
+
+// 9. 返回结果（add 成功返回新记录的ID，失败返回 false）
+if ($result !== false) {
+    echo json_encode([
+        'status'  => 'success',
+        'message' => '发布成功',
+        'data' => [
+            'work_id' => $result,
+            'redirect' => 'work_list.php'
+        ]
+    ]);
+} else {
+    echo json_encode([
+        'status'  => 'error',
+        'message' => '发布失败：' . $DB_API->errorMsg()
+    ]);
 }
-elseif ($result == false)
-{
-    $echo_array["status"] = "error";
-    $echo_array["message"] = $DB_API->error;
-}
-echo json_encode($echo_array);
 ?>
