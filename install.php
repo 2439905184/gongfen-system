@@ -346,7 +346,7 @@
                 echo '<p style="margin-top: 15px; color: #67c23a; font-weight: bold; font-size: 16px;">🎉 安装成功！</p>';
                 echo '<p style="margin-top: 8px;">共创建 4 张数据表，配置文件已生成。</p>';
                 echo '<p style="margin-top: 8px; color: #f56c6c;"><strong>⚠️  重要：请立即删除 install.php 文件，防止被他人重新安装！</strong></p>';
-                echo '<p style="margin-top: 15px;"><a href="index.html" style="color: #409eff; text-decoration: none;">前往首页 →</a></p>';
+                echo '<p style="margin-top: 15px;"><a href="index.php" style="color: #409eff; text-decoration: none;">前往首页 →</a></p>';
             } else {
                 echo '<p style="margin-top: 15px; color: #f56c6c; font-weight: bold;">❌ 安装失败</p>';
                 echo '<p>请检查上述错误信息，修正后重新安装。</p>';
