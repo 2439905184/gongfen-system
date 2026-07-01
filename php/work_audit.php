@@ -235,14 +235,16 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } elseif ($wType === "level1") {
             // 一级系统任务：仅接单者加钱
-            $addWorker = $DB_API->execQuery(
-                "UPDATE {$tables['user']} SET score = score + :num WHERE id=:wid",
-                [":num"=>$reward, ":wid"=>$workerId],
-                true
+            $addWorker = $DB_API->execQuery("UPDATE {$tables['user']} SET score = score + :num WHERE id=:wid",
+                [":num"=>$reward, ":wid"=>$workerId]
             );
-            if ($addWorker == false || $addWorker == []) {
+            if ($addWorker == false)
+            {
                 throw new Exception("系统工分发放失败");
             }
+            /*if ($addWorker == false || $addWorker == []) {
+                throw new Exception("系统工分发放失败");
+            }*/
 
             // 接单者流水
             $workerAfter = $DB_API->execQuery(
