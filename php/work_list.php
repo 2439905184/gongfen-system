@@ -427,7 +427,7 @@ if (!$workList) {
     <div class="container">
         <!-- 顶部导航 -->
         <div class="header">
-            <a href="index.php" class="logo">
+            <a href="../index.php" class="logo">
                 <div class="logo-icon">
                     <svg viewBox="0 0 24 24">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
