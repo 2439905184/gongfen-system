@@ -171,10 +171,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 扣发布者工分（校验执行结果）
             $subPub = $DB_API->execQuery(
                 "UPDATE {$tables['user']} SET score = score - :num WHERE id=:pid",
-                [":num"=>$reward, ":pid"=>$pubId],
-                true
+                [":num"=>$reward, ":pid"=>$pubId]
             );
-            if ($subPub == false || $subPub == []) {
+            if ($subPub == false) 
+            {
                 throw new Exception("发布者工分扣除失败");
             }
 
