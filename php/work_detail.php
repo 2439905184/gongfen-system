@@ -1,7 +1,7 @@
 <?php
 session_start();
 // 引入配置和数据库
-include __DIR__ . '/lib/Dabase.php';
+include __DIR__ . '/lib/Database.php';
 include __DIR__ . '/../config.php';
 
 // 检查任务ID

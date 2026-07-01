@@ -10,7 +10,7 @@ session_start();
 
 // 引入配置和数据库类
 include __DIR__ . '/../../config.php';
-include __DIR__ . '/../lib/Dabase.php';
+include __DIR__ . '/../lib/Database.php';
 
 // 返回 JSON
 header('Content-Type: application/json; charset=utf-8');

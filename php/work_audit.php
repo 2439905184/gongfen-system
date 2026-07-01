@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1); // 开启严格类型检查
-include(__DIR__ ."/lib/Dabase.php");
+include(__DIR__ ."/lib/Database.php");
 include(__DIR__ . "/../config.php");
 session_start();
 header("Content-Type:text/html;charset=utf-8");

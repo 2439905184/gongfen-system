@@ -13,7 +13,7 @@ if ($workId <= 0 || empty($answerContent)) {
     echo json_encode(["status"=>"error","message"=>"请填写完整交付说明"]);
     exit;
 }
-include __DIR__ . '/../lib/Dabase.php';
+include __DIR__ . '/../lib/Database.php';
 include __DIR__ . '/../../config.php';
 $DB_API = new DB_API($config);
 $prefix = $config['db_prefix'];

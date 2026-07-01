@@ -6,7 +6,7 @@
 
 session_start();
 
-include __DIR__ . '/lib/Dabase.php';
+include __DIR__ . '/lib/Database.php';
 include __DIR__ . '/../config.php';
 
 $DB_API = new DB_API($config);

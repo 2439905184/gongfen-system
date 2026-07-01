@@ -7,7 +7,7 @@
 session_start();
 
 // 2. 引入文件（注意文件名：Dabase.php，不是 Dabse.php）
-include __DIR__ . '/../lib/Dabase.php';
+include __DIR__ . '/../lib/Database.php';
 include __DIR__ . '/../../config.php';
 
 // 3. 检查是否登录

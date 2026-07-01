@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 // 引入数据库类、配置
-include __DIR__ . '/../lib/Dabase.php';
+include __DIR__ . '/../lib/Database.php';
 include __DIR__ . '/../../config.php';
 
 // 未登录拦截
